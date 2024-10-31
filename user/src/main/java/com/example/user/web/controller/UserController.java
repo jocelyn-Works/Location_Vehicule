@@ -65,6 +65,7 @@ public class UserController {
                         user.setLastName(newUser.getLastName());
                         return ResponseEntity.ok(userRepository.save(user));
                     }).orElseGet(() -> ResponseEntity.ok(userRepository.save(newUser))));
+
         }else {
             throw new CodeNotValidException("Code not valid");
         }
