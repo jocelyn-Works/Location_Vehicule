@@ -31,8 +31,8 @@ public class Reservation {
     private Date endDate;
 
     @Column(name="km_to_wish", nullable = false)
-    private String kmToWish;
+    private int kmToWish;
 
-    @Column(name="vehicle_registration", nullable = false)
+    @Column(name="total_price", nullable = false)
     private Float totalPrice;
 }
