@@ -1,5 +1,6 @@
 package com.example.reservation.controller;
 
+import com.example.reservation.execption.VehicleNotAvailable;
 import com.example.reservation.model.Reservation;
 import com.example.reservation.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,26 +25,37 @@ public class ReservationController {
 
     @PostMapping(value = ("/reservation"))
     public ResponseEntity<Reservation> addReservation(@RequestBody Reservation reservation) {
-        return ResponseEntity.ok(reservationRepository.save(reservation));
+
+        List<Reservation> r = reservationRepository.findBetweenDates(reservation.getStartDate(), reservation.getEndDate());
+
+        if (r.isEmpty()){
+            return ResponseEntity.ok(reservationRepository.save(reservation));
+        }else {
+            throw new VehicleNotAvailable("Vehicle non disponible a ces dates");
+        }
     }
 
     @PutMapping(value = ("/reservation/{id}"))
     public ResponseEntity<String> updateReservation(@PathVariable int id, @RequestBody Reservation reservation) {
        Optional<Reservation> reservationOptional = Optional.ofNullable(reservationRepository.findById(id).orElseThrow(EntityNotFoundException::new));
        if (reservationOptional.isPresent()) {
-           reservation.setId(id);
-           reservation.setUserId(reservation.getUserId());
-           reservation.setVehicleId(reservation.getVehicleId());
-           reservation.setStartDate(reservation.getStartDate());
-           reservation.setEndDate(reservation.getEndDate());
-           reservation.setKmToWish(reservation.getKmToWish());
-           reservation.setTotalPrice(reservation.getTotalPrice());
-           reservationRepository.save(reservation);
-           return new ResponseEntity<String>("Reservation updated", HttpStatus.OK);
+           List<Reservation> r = reservationRepository.findBetweenDates(reservation.getStartDate(), reservation.getEndDate());
+           if (r.isEmpty()){
+               reservation.setId(id);
+               reservation.setUserId(reservation.getUserId());
+               reservation.setVehicleId(reservation.getVehicleId());
+               reservation.setStartDate(reservation.getStartDate());
+               reservation.setEndDate(reservation.getEndDate());
+               reservation.setKmToWish(reservation.getKmToWish());
+               reservation.setTotalPrice(reservation.getTotalPrice());
+               reservationRepository.save(reservation);
+               return new ResponseEntity<>("Reservation updated", HttpStatus.OK);
+           }else {
+               throw new VehicleNotAvailable("Vehicle non disponible a ces dates");
+           }
        } else {
            return new ResponseEntity<>("Reservation not found", HttpStatus.BAD_REQUEST);
        }
-
     }
 
     @GetMapping(value = ("/reservation"))

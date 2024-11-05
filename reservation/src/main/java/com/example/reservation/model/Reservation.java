@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Locale;
 
 @Entity
 @Getter
@@ -25,10 +27,10 @@ public class Reservation {
     private int vehicleId;
 
     @Column(name="start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name="end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name="km_to_wish", nullable = false)
     private int kmToWish;
