@@ -50,6 +50,7 @@ public class VehicleController {
      */
     @PostMapping(value = "/vehicle")
     public ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle vehicle) {
+
         return ResponseEntity.ok(vehicleRepository.save(vehicle));
     }
 
@@ -73,8 +74,6 @@ public class VehicleController {
             vehicle.setReservationPrice(vehicle.getReservationPrice());
             vehicle.setKmPrice(vehicle.getKmPrice());
             vehicle.setTaxHorse(vehicle.getTaxHorse());
-            vehicle.setMaintenanceStartDate(vehicle.getMaintenanceStartDate());
-            vehicle.setMaintenanceEndDate(vehicle.getMaintenanceEndDate());
             vehicle.setTraveledKm(vehicle.getTraveledKm());
             vehicle.setCylinder(vehicle.getCylinder());
             vehicle.setVolume(vehicle.getVolume());

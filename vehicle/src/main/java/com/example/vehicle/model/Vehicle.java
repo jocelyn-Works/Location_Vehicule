@@ -8,6 +8,7 @@ import lombok.Setter;
 
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -44,11 +45,6 @@ public class Vehicle {
     @Column(name="tax_horse", nullable = false)
     private Float taxHorse;
 
-    @Column(name="maintenance_start_date", nullable = false)
-    private Date maintenanceStartDate;
-
-    @Column(name="maintenance_end_date", nullable = false)
-    private Date maintenanceEndDate;
 
     @Column(name="traveled_km", nullable = false)
     private int traveledKm;
@@ -58,5 +54,7 @@ public class Vehicle {
 
     @Column(name="volume", nullable = true)
     private int volume;
+
+
 
 }
