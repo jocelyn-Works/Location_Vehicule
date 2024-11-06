@@ -12,6 +12,11 @@ public class ExceptionHandlingController {
     //exception pour les codes non valid
     @ExceptionHandler({VehicleNotAvailable.class})
     public ResponseEntity<Object> handleCodeNotValidException(VehicleNotAvailable exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ Error 666 ] Date non disponible : " + exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ Error 666 ] Vehicle Not Available : " + exception.getMessage());
+    }
+
+    @ExceptionHandler({UserNotAvalaible.class})
+    public ResponseEntity<Object> handleCodeNotValidException(UserNotAvalaible exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ Error 666 ] User Not Available : " + exception.getMessage());
     }
 }

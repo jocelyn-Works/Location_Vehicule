@@ -16,10 +16,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findAllByVehicleId(int vehicle_id);
 
     @Query(value = "select * from reservation where " +
-            "(?1 >= start_date AND ?1 <= end_date) " +
-            "OR (?2 >= start_date AND ?2 <= end_date)" +
-            "OR (?1 <= start_date AND ?2 >= end_date)",
+            "(?3 = vehicule_id AND ?1 >= start_date AND ?1 <= end_date) " +
+            "OR (?3 = vehicule_id AND ?2 >= start_date AND ?2 <= end_date)" +
+            "OR (?3 = vehicule_id AND ?1 <= start_date AND ?2 >= end_date)",
             nativeQuery = true)
-    List<Reservation> findBetweenDates(LocalDateTime start_date, LocalDateTime end_date);
+    List<Reservation> findAllReservationBetweenDatesWithVehicleId(LocalDateTime start_date, LocalDateTime end_date, int vehicle_id);
+
+    @Query(value = "select * from reservation where " +
+            "(?3 = user_id AND ?1 >= start_date AND ?1 <= end_date) " +
+            "OR (?3 = user_id AND ?2 >= start_date AND ?2 <= end_date)" +
+            "OR (?3 = user_id AND ?1 <= start_date AND ?2 >= end_date)",
+            nativeQuery = true)
+    List<Reservation> findAllReservationBetweenDatesWithUserId(LocalDateTime start_date, LocalDateTime end_date, int user_id);
 }
 

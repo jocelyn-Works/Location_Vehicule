@@ -1,6 +1,5 @@
-//package com.example.eureka_server;
+//package com.example.reservation.DTO;
 //
-//import com.example.eureka_server.DTO.User;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.CommandLineRunner;
 //import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -26,12 +25,12 @@
 //    }
 //
 //    @Override
-//    public void run(String... args) throws Exception {
+//    public void run(String... args) {
 //        ResponseEntity<List<User>> reponse = this.restTemplate.exchange(
 //                        "http://USER/users",
 //                        HttpMethod.GET,
 //                        null,
-//                        new ParameterizedTypeReference<List<User>>() {
+//                        new ParameterizedTypeReference<>() {
 //                        });
 //
 //        reponse.getBody().forEach(System.out::println);
