@@ -1,9 +1,5 @@
 package com.example.reservation.controller;
 
-import com.example.reservation.DTO.User;
-import com.example.reservation.DTO.Vehicle;
-import com.example.reservation.execption.UserNotAvalaible;
-import com.example.reservation.execption.VehicleNotAvailable;
 import com.example.reservation.model.Reservation;
 import com.example.reservation.repository.ReservationRepository;
 import com.example.reservation.service.ReservationService;
@@ -15,8 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 @RestController

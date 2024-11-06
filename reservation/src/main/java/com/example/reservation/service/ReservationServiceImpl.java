@@ -7,6 +7,7 @@ import com.example.reservation.execption.VehicleNotAvailable;
 import com.example.reservation.model.Reservation;
 import com.example.reservation.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ import java.util.Optional;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
+    @Autowired
+    RestTemplate restTemplate;
+
     private final ReservationRepository reservationRepository;
 
     public ReservationServiceImpl(ReservationRepository reservationRepository) {
@@ -138,14 +142,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public ResponseEntity<User> findUserById(int userId) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:9191/user/{userId}";
+        String url = "http://USER/user/{userId}";
         return restTemplate.getForEntity(url, User.class, userId);
     }
 
     public ResponseEntity<Vehicle> findVehicleById(int vehicleId) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url2 = "http://localhost:8080/api/vehicle/{reservation.getVehicleId()}";
+        String url2 = "http://VEHICLE/api/vehicle/{reservation.getVehicleId()}";
         return restTemplate.getForEntity(url2, Vehicle.class, vehicleId);
     }
 }
