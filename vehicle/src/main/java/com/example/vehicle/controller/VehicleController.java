@@ -2,6 +2,7 @@ package com.example.vehicle.controller;
 
 import com.example.vehicle.model.Vehicle;
 import com.example.vehicle.repository.VehicleRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -62,11 +63,11 @@ public class VehicleController {
      * @return
      */
     @PutMapping(value = "/vehicle/{id}")
-    public ResponseEntity<String> updateVehicle(@PathVariable int id, @RequestBody Vehicle vehicle) {
-        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
-        if (vehicleOptional.isPresent()) {
+    public ResponseEntity<Vehicle> updateVehicle(@PathVariable int id, @RequestBody Vehicle vehicle) {
+        Optional<Vehicle> vehicleOptional = Optional.of(vehicleRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+
             vehicle.setId(id);
-            vehicle.setVehicle_registration(vehicle.getVehicle_registration());
+            vehicle.setVehicleRegistration(vehicle.getVehicleRegistration());
             vehicle.setVehicleType(vehicle.getVehicleType());
             vehicle.setBrand(vehicle.getBrand());
             vehicle.setModel(vehicle.getModel());
@@ -77,11 +78,7 @@ public class VehicleController {
             vehicle.setTraveledKm(vehicle.getTraveledKm());
             vehicle.setCylinder(vehicle.getCylinder());
             vehicle.setVolume(vehicle.getVolume());
-            vehicleRepository.save(vehicle);
-            return new ResponseEntity<String>("Vehicle updated", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Vehicle not found", HttpStatus.BAD_REQUEST);
-        }
+            return ResponseEntity.ok(vehicleRepository.save(vehicle));
 
     }
 

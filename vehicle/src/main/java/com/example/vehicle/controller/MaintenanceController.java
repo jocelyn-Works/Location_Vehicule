@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +21,7 @@ public class MaintenanceController {
     private final MaintenanceRepository maintenanceRepository;
     private final VehicleRepository vehicleRepository;
 
-    public MaintenanceController(MaintenanceRepository maintenanceRepository,VehicleRepository vehicleRepository) {
+    public MaintenanceController(MaintenanceRepository maintenanceRepository, VehicleRepository vehicleRepository) {
         this.maintenanceRepository = maintenanceRepository;
         this.vehicleRepository = vehicleRepository;
     }
@@ -37,12 +36,20 @@ public class MaintenanceController {
         return maintenanceRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+
     @PostMapping(value = ("/maintenance/{vehicle_id}"))
-    public ResponseEntity<Maintenance> createMaintenance(@PathVariable int vehicle_id,@Valid @RequestBody Maintenance maintenance) {
+    public ResponseEntity<Maintenance> createMaintenance(@PathVariable int vehicle_id, @Valid @RequestBody Maintenance maintenance) {
         Vehicle vehicule = vehicleRepository.findById(vehicle_id).orElseThrow(EntityNotFoundException::new);
         maintenance.setVehicle(vehicule);
+        maintenance.setKmVehicle(vehicule.getTraveledKm());
         return ResponseEntity.ok(maintenanceRepository.save(maintenance));
     }
+
+    @GetMapping(value = ("/maintenance/vehicle/{vehicle_id}"))
+    public Maintenance getMaintenanceByVehicleId(@PathVariable int vehicle_id) {
+        return maintenanceRepository.findByVehicleId(vehicle_id);
+    }
+
 
     @PutMapping(value = ("/maintenance/{id}"))
     public ResponseEntity<String> updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
@@ -65,6 +72,8 @@ public class MaintenanceController {
         maintenanceRepository.deleteById(id);
         return new ResponseEntity<>("maintenance deleted", HttpStatus.OK);
     }
+
+    @GetMapping(value = ("/maintenance/{start_date}/{end_date}"))
 
 
 }

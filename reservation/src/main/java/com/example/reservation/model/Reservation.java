@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Reservation {
+public class Reservation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,13 +27,16 @@ public class Reservation {
     private int vehicleId;
 
     @Column(name="start_date", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name="end_date", nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name="km_to_wish", nullable = false)
     private int kmToWish;
+
+    @Column(name="km_realized", nullable = true)
+    private int kmRealized;
 
     @Column(name="total_price", nullable = false)
     private Float totalPrice;

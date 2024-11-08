@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,14 +16,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Table(name = "vehicle")
-public class Vehicle {
+public class Vehicle implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @Column(name="vehicle_registration", nullable = false, unique = true)
-    private String vehicle_registration;
+    private String vehicleRegistration;
 
     @Column(name="vehicle_type", nullable = false)
     private String vehicleType;

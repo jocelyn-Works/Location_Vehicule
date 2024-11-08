@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,18 +25,23 @@ public class Maintenance {
     @JoinColumn(name="vehicle_id", nullable = false)
     private Vehicle vehicle;
 
+    @Column(name="km_vehicle", nullable = false)
+    private int kmVehicle;
 
     @Column(name="notification", nullable = false)
     private String notification;
 
+    @Column(name="start_maintenance", nullable = false)
+    private LocalDateTime startMaintenance;
+
+    @Column(name="end_maintenance", nullable = false)
+    private LocalDateTime endMaintenance;
 
     @Column(name="realize", nullable = false)
     private Boolean realize;
 
-
     @CreationTimestamp
     private LocalDateTime createdDate;
-
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
