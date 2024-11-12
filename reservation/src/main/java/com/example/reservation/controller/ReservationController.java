@@ -112,8 +112,6 @@ public class ReservationController {
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
             }
-
-
             return reservationRepository.save(reservation);
         }
         return null;

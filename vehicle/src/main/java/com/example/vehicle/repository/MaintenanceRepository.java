@@ -13,4 +13,5 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Intege
     @Query(value = "select * from maintenance where ?1 = vehicle_id order by updated_at desc limit 1", nativeQuery = true)
     Maintenance findByVehicleId(int vehicleId);
 
+    List<Maintenance> findByRealizedFalse();
 }

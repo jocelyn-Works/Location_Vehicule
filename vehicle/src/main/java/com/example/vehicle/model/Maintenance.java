@@ -31,14 +31,14 @@ public class Maintenance {
     @Column(name="notification", nullable = false)
     private String notification;
 
-    @Column(name="start_maintenance", nullable = false)
+    @Column(name="start_maintenance", nullable = true)
     private LocalDateTime startMaintenance;
 
-    @Column(name="end_maintenance", nullable = false)
+    @Column(name="end_maintenance", nullable = true)
     private LocalDateTime endMaintenance;
 
-    @Column(name="realize", nullable = false)
-    private Boolean realize;
+    @Column(name="realized", nullable = false)
+    private Boolean realized;
 
     @CreationTimestamp
     private LocalDateTime createdDate;

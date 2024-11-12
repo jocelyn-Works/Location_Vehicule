@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,11 @@ public class MaintenanceController {
     @GetMapping(value = ("/maintenance"))
     public ResponseEntity<List<Maintenance>> getAllMaintenance() {
         return ResponseEntity.ok(maintenanceRepository.findAll());
+    }
+
+    @GetMapping(value = ("/maintenance/alert"))
+    public ResponseEntity<List<Maintenance>> getAllMaintenanceNotRealized() {
+        return ResponseEntity.ok(maintenanceRepository.findByRealizedFalse());
     }
 
     @GetMapping(value = ("/maintenance/{id}"))
@@ -58,8 +64,11 @@ public class MaintenanceController {
             maintenance.setId(id);
             maintenance.setVehicle(maintenance.getVehicle());
             maintenance.setNotification(maintenance.getNotification());
-            maintenance.setRealize(maintenance.getRealize());
+            maintenance.setRealized(maintenance.getRealized());
             maintenance.setUpdatedAt(maintenance.getUpdatedAt());
+
+            maintenance.setStartMaintenance(maintenance.getStartMaintenance());
+            maintenance.setEndMaintenance(maintenance.getEndMaintenance());
             maintenanceRepository.save(maintenance);
             return new ResponseEntity<>("maintenance updated", HttpStatus.OK);
         } else {
@@ -73,7 +82,7 @@ public class MaintenanceController {
         return new ResponseEntity<>("maintenance deleted", HttpStatus.OK);
     }
 
-    @GetMapping(value = ("/maintenance/{start_date}/{end_date}"))
+//    @GetMapping(value = ("/maintenance/{start_date}/{end_date}"))
 
 
 }
