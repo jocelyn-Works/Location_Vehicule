@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 @RestController
@@ -63,14 +65,14 @@ public class ReservationController {
             String url4 = "http://localhost:8080/api/maintenance/" + reservation.getVehicleId();
             Maintenance maintenance = new Maintenance();
             if (vehiculeResponse.getVehicleType().equals("moto")) {
-                if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 1000 || calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), reservationOptional.get().getEndDate()) >= 1) {
+                if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 1000 || calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("chaîne motos +1000 km");
                     maintenance.setRealize(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
 
                 }
-                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), reservationOptional.get().getEndDate()) >= 1) {
+                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("liquide de frein");
                     maintenance.setRealize(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
@@ -84,7 +86,7 @@ public class ReservationController {
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
-                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), reservationOptional.get().getEndDate()) >= 1) {
+                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("les pneus doit etre changer + 1 ans");
                     maintenance.setRealize(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
@@ -92,7 +94,7 @@ public class ReservationController {
                 }
             }
             if (vehiculeResponse.getVehicleType().equals("utilitaire")) {
-                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), reservationOptional.get().getEndDate()) >= 2) {
+                if (calculateDate(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 2) {
                     maintenance.setNotification("les suspensions doivent etre changer + 2 ans");
                     maintenance.setRealize(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
