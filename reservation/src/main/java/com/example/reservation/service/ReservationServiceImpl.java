@@ -1,5 +1,6 @@
 package com.example.reservation.service;
 
+import com.example.reservation.DTO.Maintenance;
 import com.example.reservation.DTO.User;
 import com.example.reservation.DTO.Vehicle;
 import com.example.reservation.execption.UserNotAvalaible;
@@ -8,6 +9,8 @@ import com.example.reservation.model.Reservation;
 import com.example.reservation.repository.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -150,4 +153,72 @@ public class ReservationServiceImpl implements ReservationService {
         String url2 = "http://VEHICLE/api/vehicle/{reservation.getVehicleId()}";
         return restTemplate.getForEntity(url2, Vehicle.class, vehicleId);
     }
+
+    public Reservation ReservationMaintenanceUpdate( int id , Reservation reservation) {
+        Optional<Reservation> reservationOptional = Optional.ofNullable(reservationRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = "http://VEHICLE/api/maintenance/vehicle/" + reservation.getVehicleId();
+        ResponseEntity<Maintenance> maintenanceResponse = restTemplate.getForEntity(url, Maintenance.class);
+
+        String url2 = "http://VEHICLE/api/vehicle/" + reservation.getVehicleId();
+        Vehicle vehiculeResponse = restTemplate.getForObject(url2, Vehicle.class);
+
+        String url3 = "http://VEHICLE/api/vehicle/" + reservation.getVehicleId();
+
+        vehiculeResponse.setId(reservation.getVehicleId());
+        vehiculeResponse.setTraveledKm(vehiculeResponse.getTraveledKm() + reservationOptional.get().getKmToWish() + reservation.getKmRealized());
+
+        HttpEntity<Vehicle> request = new HttpEntity<Vehicle>(vehiculeResponse);
+        restTemplate.exchange(url3, HttpMethod.PUT, request, Vehicle.class);
+
+        if (reservationOptional.isPresent()) {
+            reservation.setId(id);
+            reservation.setKmRealized(reservationOptional.get().getKmToWish() + reservation.getKmRealized());
+
+            String url4 = "http://VEHICLE/api/maintenance/" + reservation.getVehicleId();
+            Maintenance maintenance = new Maintenance();
+            if (vehiculeResponse.getVehicleType().equals("moto")) {
+                if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 1000 || calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
+                    maintenance.setNotification("chaîne motos +1000 km");
+                    maintenance.setRealize(false);
+                    HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
+                    restTemplate.postForEntity(url4, request2, Maintenance.class);
+
+                }
+                if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
+                    maintenance.setNotification("liquide de frein");
+                    maintenance.setRealize(false);
+                    HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
+                    restTemplate.postForEntity(url4, request2, Maintenance.class);
+                }
+            }
+            if (vehiculeResponse.getVehicleType().equals("voiture") || vehiculeResponse.getVehicleType().equals("utilitaire")) {
+                if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 100000) {
+                    maintenance.setNotification("courroie de distribution +100 000 Km");
+                    maintenance.setRealize(false);
+                    HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
+                    restTemplate.postForEntity(url4, request2, Maintenance.class);
+                }
+                if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
+                    maintenance.setNotification("les pneus doit etre changer + 1 ans");
+                    maintenance.setRealize(false);
+                    HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
+                    restTemplate.postForEntity(url4, request2, Maintenance.class);
+                }
+            }
+            if (vehiculeResponse.getVehicleType().equals("utilitaire")) {
+                if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 2) {
+                    maintenance.setNotification("les suspensions doivent etre changer + 2 ans");
+                    maintenance.setRealize(false);
+                    HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
+                    restTemplate.postForEntity(url4, request2, Maintenance.class);
+                }
+            }
+            return reservationRepository.save(reservation);
+        }
+        return null;
+    }
+
+
 }
