@@ -4,6 +4,7 @@ import com.example.reservation.DTO.Maintenance;
 import com.example.reservation.DTO.Vehicle;
 import com.example.reservation.model.Reservation;
 import com.example.reservation.repository.ReservationRepository;
+import com.example.reservation.service.ReservationService;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.http.*;
@@ -11,8 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
 
 @RestController
@@ -20,33 +19,21 @@ import java.util.*;
 @RequestMapping(path = "/api") // route /api par default
 public class ReservationController {
     private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationRepository reservationRepository) {
+    public ReservationController(ReservationRepository reservationRepository, ReservationService reservationService) {
         this.reservationRepository = reservationRepository;
+        this.reservationService = reservationService;
     }
 
     @PostMapping(value = ("/reservation"))
     public ResponseEntity<Reservation> addReservation(@RequestBody Reservation reservation) {
-        return ResponseEntity.ok(reservationRepository.save(reservation));
+        return reservationService.create(reservation);
     }
 
     @PutMapping(value = ("/reservation/{id}"))
     public ResponseEntity<String> updateReservation(@PathVariable int id, @RequestBody Reservation reservation) {
-        Optional<Reservation> reservationOptional = Optional.ofNullable(reservationRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-        if (reservationOptional.isPresent()) {
-            reservation.setId(id);
-            reservation.setUserId(reservation.getUserId());
-            reservation.setVehicleId(reservation.getVehicleId());
-            reservation.setStartDate(reservation.getStartDate());
-            reservation.setEndDate(reservation.getEndDate());
-            reservation.setKmToWish(reservation.getKmToWish());
-            reservation.setTotalPrice(reservation.getTotalPrice());
-            reservationRepository.save(reservation);
-            return new ResponseEntity<String>("Reservation updated", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Reservation not found", HttpStatus.BAD_REQUEST);
-        }
-
+        return reservationService.modify(reservation, id);
     }
 
     // admin

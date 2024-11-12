@@ -1,15 +1,17 @@
 package com.example.reservation.DTO;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Vehicle {
+
     private long id;
 
     private String vehicleRegistration;
@@ -27,6 +29,10 @@ public class Vehicle {
     private Float kmPrice;
 
     private Float taxHorse;
+
+    private Date maintenanceStartDate;
+
+    private Date maintenanceEndDate;
 
     private int traveledKm;
 

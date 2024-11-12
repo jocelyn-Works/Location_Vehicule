@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class UserController {
     @Operation(summary  = "Create user", description = "This method creates a new user")
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:9192/licenses/{u.getCode()}";
+        String url = "http://localhost:9192/licenses/{user.getPermitCode()}";
         ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class, user.getPermitCode());
         if (Boolean.TRUE.equals(response.getBody())){
             return ResponseEntity.ok(userRepository.save(user));
@@ -54,7 +55,7 @@ public class UserController {
     @Operation(summary  = "Update one user", description = "This method update one user")
     public Optional<ResponseEntity<User>> updateUser(@RequestBody @Valid User newUser, @PathVariable int id) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:9192/licenses/{u.getCode()}";
+        String url = "http://localhost:9192/licenses/{user.getPermitCode()}";
         ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class, newUser.getPermitCode());
         if (Boolean.TRUE.equals(response.getBody())) {
             return Optional.of(userRepository.findById(id)
@@ -76,5 +77,12 @@ public class UserController {
     public String deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
         return "User deleted";
+    }
+
+    @GetMapping(value ="/userBirthDate/{id}")
+    @Operation(summary  = "Select one user birth_date", description = "This method select one user")
+    public Date getUserAge(@PathVariable int id) {
+        User u = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return u.getBirthDate();
     }
 }
