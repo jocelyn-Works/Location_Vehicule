@@ -7,21 +7,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "vehicle")
-public class Vehicle {
+public class Vehicle implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @Column(name="vehicle_registration", nullable = false, unique = true)
-    private String vehicle_registration;
+    private String vehicleRegistration;
 
     @Column(name="vehicle_type", nullable = false)
     private String vehicleType;
@@ -44,11 +46,6 @@ public class Vehicle {
     @Column(name="tax_horse", nullable = false)
     private Float taxHorse;
 
-    @Column(name="maintenance_start_date", nullable = false)
-    private Date maintenanceStartDate;
-
-    @Column(name="maintenance_end_date", nullable = false)
-    private Date maintenanceEndDate;
 
     @Column(name="traveled_km", nullable = false)
     private int traveledKm;
@@ -58,5 +55,7 @@ public class Vehicle {
 
     @Column(name="volume", nullable = true)
     private int volume;
+
+
 
 }
