@@ -6,8 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -39,4 +40,14 @@ public class Reservation {
 
     @Column(name="total_price", nullable = false)
     private Float totalPrice;
+
+    public Reservation(int id, int userId, int vehicleId, String startDate, String endDate,int kmToWish, float totalPrice) {
+        this.id = id;
+        this.userId = userId;
+        this.vehicleId = vehicleId;
+        this.startDate = LocalDate.parse(startDate);
+        this.endDate = LocalDate.parse(endDate);
+        this.kmToWish = kmToWish;
+        this.totalPrice = totalPrice;
+    }
 }
