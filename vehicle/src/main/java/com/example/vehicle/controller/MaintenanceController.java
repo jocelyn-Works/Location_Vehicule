@@ -45,9 +45,9 @@ public class MaintenanceController {
 
     @PostMapping(value = ("/maintenance/{vehicle_id}"))
     public ResponseEntity<Maintenance> createMaintenance(@PathVariable int vehicle_id, @Valid @RequestBody Maintenance maintenance) {
-        Vehicle vehicule = vehicleRepository.findById(vehicle_id).orElseThrow(EntityNotFoundException::new);
-        maintenance.setVehicle(vehicule);
-        maintenance.setKmVehicle(vehicule.getTraveledKm());
+        Vehicle vehicle = vehicleRepository.findById(vehicle_id).orElseThrow(EntityNotFoundException::new);
+        maintenance.setVehicle(vehicle);
+        maintenance.setKmVehicle(vehicle.getTraveledKm());
         return ResponseEntity.ok(maintenanceRepository.save(maintenance));
     }
 
@@ -58,7 +58,7 @@ public class MaintenanceController {
 
 
     @PutMapping(value = ("/maintenance/{id}"))
-    public ResponseEntity<String> updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
+    public Maintenance updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
         Optional<Maintenance> optionalMaintenance = Optional.ofNullable(maintenanceRepository.findById(id).orElseThrow(EntityNotFoundException::new));
         if (optionalMaintenance.isPresent()) {
             maintenance.setId(id);
@@ -66,14 +66,11 @@ public class MaintenanceController {
             maintenance.setNotification(maintenance.getNotification());
             maintenance.setRealized(maintenance.getRealized());
             maintenance.setUpdatedAt(maintenance.getUpdatedAt());
-
             maintenance.setStartMaintenance(maintenance.getStartMaintenance());
             maintenance.setEndMaintenance(maintenance.getEndMaintenance());
-            maintenanceRepository.save(maintenance);
-            return new ResponseEntity<>("maintenance updated", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Maintenance not found", HttpStatus.BAD_REQUEST);
+            return  maintenanceRepository.save(maintenance);
         }
+        return maintenance;
     }
 
     @DeleteMapping(value = ("/maintenance/{id}"))
