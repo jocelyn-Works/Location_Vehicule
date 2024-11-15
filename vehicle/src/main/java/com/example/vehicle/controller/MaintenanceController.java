@@ -56,9 +56,14 @@ public class MaintenanceController {
         return maintenanceRepository.findByVehicleId(vehicle_id);
     }
 
+    @GetMapping(value = ("/maintenances/vehicle/{vehicle_id}"))
+    public List<Maintenance> getAllMaintenanceByVehicleId(@PathVariable int vehicle_id) {
+        return maintenanceRepository.findAllByVehicleId(vehicle_id);
+    }
+
 
     @PutMapping(value = ("/maintenance/{id}"))
-    public ResponseEntity<String> updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
+    public Maintenance updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
         Optional<Maintenance> optionalMaintenance = Optional.ofNullable(maintenanceRepository.findById(id).orElseThrow(EntityNotFoundException::new));
         if (optionalMaintenance.isPresent()) {
             maintenance.setId(id);
@@ -69,11 +74,8 @@ public class MaintenanceController {
 
             maintenance.setStartMaintenance(maintenance.getStartMaintenance());
             maintenance.setEndMaintenance(maintenance.getEndMaintenance());
-            maintenanceRepository.save(maintenance);
-            return new ResponseEntity<>("maintenance updated", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Maintenance not found", HttpStatus.BAD_REQUEST);
         }
+        return maintenanceRepository.save(maintenance);
     }
 
     @DeleteMapping(value = ("/maintenance/{id}"))

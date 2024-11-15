@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Maintenance {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    //@GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @ManyToOne
@@ -32,13 +32,13 @@ public class Maintenance {
     private String notification;
 
     @Column(name="start_maintenance", nullable = true)
-    private LocalDateTime startMaintenance;
+    private LocalDate startMaintenance;
 
     @Column(name="end_maintenance", nullable = true)
-    private LocalDateTime endMaintenance;
+    private LocalDate endMaintenance;
 
     @Column(name="realized", nullable = false)
-    private Boolean realized;
+    private Boolean realized = false;
 
     @CreationTimestamp
     private LocalDateTime createdDate;
@@ -46,5 +46,14 @@ public class Maintenance {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public Maintenance(int id, String notification) {
+        this.id = id;
+        this.notification = notification;
+    }
 
+    public Maintenance(int id, String notification, Vehicle vehicle) {
+        this.id = id;
+        this.notification = notification;
+        this.vehicle = vehicle;
+    }
 }

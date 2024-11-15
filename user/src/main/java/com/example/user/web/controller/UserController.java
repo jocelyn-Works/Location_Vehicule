@@ -6,14 +6,14 @@ import com.example.user.web.controller.Exception.CodeNotValidException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -53,19 +53,20 @@ public class UserController {
 
     @PutMapping(value = "/user/{id}")
     @Operation(summary  = "Update one user", description = "This method update one user")
-    public Optional<ResponseEntity<User>> updateUser(@RequestBody @Valid User newUser, @PathVariable int id) {
+    public ResponseEntity<User> updateUser(@RequestBody @Valid User newUser, @PathVariable int id) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:9192/licenses/{user.getPermitCode()}";
+        String url = "http://localhost:9192/licenses/{newUser.getPermitCode()}";
         ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class, newUser.getPermitCode());
         if (Boolean.TRUE.equals(response.getBody())) {
-            return Optional.of(userRepository.findById(id)
+            return userRepository.findById(id)
                     .map(user -> {
+                        user.setId(newUser.getId());
                         user.setBirthDate(newUser.getBirthDate());
                         user.setPermitCode(newUser.getPermitCode()) ;
                         user.setFirstName(newUser.getFirstName());
                         user.setLastName(newUser.getLastName());
                         return ResponseEntity.ok(userRepository.save(user));
-                    }).orElseGet(() -> ResponseEntity.ok(userRepository.save(newUser))));
+                    }).orElseGet(() -> ResponseEntity.ok(userRepository.save(newUser)));
 
         }else {
             throw new CodeNotValidException("Code not valid");
@@ -81,7 +82,7 @@ public class UserController {
 
     @GetMapping(value ="/userBirthDate/{id}")
     @Operation(summary  = "Select one user birth_date", description = "This method select one user")
-    public Date getUserAge(@PathVariable int id) {
+    public @NotNull Date getUserAge(@PathVariable int id) {
         User u = userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return u.getBirthDate();
     }

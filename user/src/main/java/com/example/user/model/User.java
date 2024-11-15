@@ -20,7 +20,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
+  
     @NotBlank
     @Size(max=64)
     private String firstName;
@@ -78,4 +78,6 @@ public class User implements Serializable {
         this.permitCode = permitCode;
         this.dateOfObtaining = dateOfObtaining;
     }
+
+ 
 }
