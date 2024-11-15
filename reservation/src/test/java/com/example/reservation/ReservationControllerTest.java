@@ -83,6 +83,54 @@ class ReservationControllerTest {
 
     @Test
     @Order(4)
+    public void testGetReservationByUserId() throws Exception {
+        mockMvc.perform(get("/api/reservation/user/{userId}", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(2)))
+                .andExpect(jsonPath("$[0].userId", is(2)))
+                .andExpect(jsonPath("$[0].vehicleId", is(2)))
+                .andExpect(jsonPath("$[0].startDate", is("2025-01-06")))
+                .andExpect(jsonPath("$[0].endDate", is("2025-02-01")))
+                .andExpect(jsonPath("$[0].kmToWish", is(1000)))
+                .andExpect(jsonPath("$[0].kmRealized", is(1000)))
+                .andExpect(jsonPath("$[0].totalPrice", is(900.0)))
+
+                .andExpect(jsonPath("$[1].id", is(4)))
+                .andExpect(jsonPath("$[1].userId", is(2)))
+                .andExpect(jsonPath("$[1].vehicleId", is(2)))
+                .andExpect(jsonPath("$[1].startDate", is("2050-10-10")))
+                .andExpect(jsonPath("$[1].endDate", is("2050-10-10")))
+                .andExpect(jsonPath("$[1].kmToWish", is(500)))
+                .andExpect(jsonPath("$[1].kmRealized", is(0)))
+                .andExpect(jsonPath("$[1].totalPrice", is(125.0)));
+    }
+
+    @Test
+    @Order(5)
+    public void testGetReservationByVehicleId() throws Exception {
+        mockMvc.perform(get("/api/reservation/vehicle/{vehicleId}", 2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(2)))
+                .andExpect(jsonPath("$[0].userId", is(2)))
+                .andExpect(jsonPath("$[0].vehicleId", is(2)))
+                .andExpect(jsonPath("$[0].startDate", is("2025-01-06")))
+                .andExpect(jsonPath("$[0].endDate", is("2025-02-01")))
+                .andExpect(jsonPath("$[0].kmToWish", is(1000)))
+                .andExpect(jsonPath("$[0].kmRealized", is(1000)))
+                .andExpect(jsonPath("$[0].totalPrice", is(900.0)))
+
+                .andExpect(jsonPath("$[1].id", is(4)))
+                .andExpect(jsonPath("$[1].userId", is(2)))
+                .andExpect(jsonPath("$[1].vehicleId", is(2)))
+                .andExpect(jsonPath("$[1].startDate", is("2050-10-10")))
+                .andExpect(jsonPath("$[1].endDate", is("2050-10-10")))
+                .andExpect(jsonPath("$[1].kmToWish", is(500)))
+                .andExpect(jsonPath("$[1].kmRealized", is(0)))
+                .andExpect(jsonPath("$[1].totalPrice", is(125.0)));
+    }
+
+    @Test
+    @Order(6)
     public void testPutReservation() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/reservation/{id}", 4)
                 .content(asJsonString(new Reservation(4, 2, 2, "2060-10-10", "2060-10-10", 700, 80.0F)))
@@ -93,7 +141,7 @@ class ReservationControllerTest {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void testDeleteReservation() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/reservation/{id}", 4))
                 .andExpect(status().isOk())
@@ -109,5 +157,4 @@ class ReservationControllerTest {
             throw new RuntimeException(e);
         }
     }
-
 }

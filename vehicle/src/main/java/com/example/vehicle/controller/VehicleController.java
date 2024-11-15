@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @RestController
 @Validated
+@CrossOrigin
 @RequestMapping(path = "/api") // route /api par default
 public class VehicleController {
 
