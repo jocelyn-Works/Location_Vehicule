@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -22,7 +23,11 @@ public class Maintenance {
 
     private String notification;
 
-    private Boolean realize;
+    private Boolean realized;
+
+    private LocalDate startMaintenance;
+
+    private LocalDate endMaintenance;
 
     private LocalDateTime createdDate;
 

@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,20 +39,28 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> r = reservationRepository.findAllReservationBetweenDatesWithVehicleId(reservation.getStartDate(), reservation.getEndDate(), reservation.getVehicleId());
         List<Reservation> j = reservationRepository.findAllReservationBetweenDatesWithUserId(reservation.getStartDate(), reservation.getEndDate(), reservation.getUserId());
 
-        ResponseEntity<User> response = findUserById(reservation.getUserId());
-        ResponseEntity<Vehicle> response2 = findVehicleById(reservation.getVehicleId());
+        User response = findUserById(reservation.getUserId());
+        Vehicle response2 = findVehicleById(reservation.getVehicleId());
+        List<Maintenance> response3 = findAllMaintenanceByVehicleId(reservation.getVehicleId());
 
         LocalDate dateAujourdhui = LocalDate.now();
-        LocalDate userBirthDate = response.getBody().getBirthDate().toLocalDate();
-        LocalDate dtaOfObtainingPermit = response.getBody().getDateOfObtaining().toLocalDate();
-        String vehiculeType = response2.getBody().getVehicleType();
-        float taxHorse = response2.getBody().getTaxHorse();
-        float basePrice = response2.getBody().getReservationPrice();
-        float kmPrice = response2.getBody().getKmPrice();
+        LocalDate userBirthDate = response.getBirthDate().toLocalDate();
+        LocalDate dtaOfObtainingPermit = response.getDateOfObtaining().toLocalDate();
+        String vehiculeType = response2.getVehicleType();
+        float taxHorse = response2.getTaxHorse();
+        float basePrice = response2.getReservationPrice();
+        float kmPrice = response2.getKmPrice();
 
         long userAge = calculateAge(userBirthDate, dateAujourdhui);
         long permitAvailable = calculateAge(dtaOfObtainingPermit, dateAujourdhui);
 
+        for (Maintenance maintenance : response3) {
+            if ((!reservation.getStartDate().isAfter(maintenance.getStartMaintenance()) && !reservation.getStartDate().isAfter(maintenance.getEndMaintenance()) && !maintenance.getRealized()) ||
+                    (!reservation.getEndDate().isAfter(maintenance.getStartMaintenance()) && !reservation.getEndDate().isAfter(maintenance.getEndMaintenance()) && !maintenance.getRealized()) ||
+                    (!reservation.getStartDate().isBefore(maintenance.getStartMaintenance()) && !reservation.getEndDate().isBefore(maintenance.getEndMaintenance())) && !maintenance.getRealized()) {
+                throw new VehicleNotAvailable("Vehicle non disponible à ces dates");
+            }
+        }
         if (!r.isEmpty()) {
             throw new VehicleNotAvailable("Vehicle non disponible a ces dates");
         }
@@ -72,10 +81,10 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setTotalPrice(basePrice + kmPrice * reservation.getKmToWish());
         }
         if (Objects.equals(vehiculeType, "2_roue")){
-            reservation.setTotalPrice((float) (basePrice + response2.getBody().getCylinder() * 0.001 *  kmPrice * reservation.getKmToWish()));
+            reservation.setTotalPrice((float) (basePrice + response2.getCylinder() * 0.001 *  kmPrice * reservation.getKmToWish()));
         }
         if (Objects.equals(vehiculeType, "utilitaire")){
-            reservation.setTotalPrice((float) (basePrice + response2.getBody().getVolume() * 0.05 * kmPrice * reservation.getKmToWish()));
+            reservation.setTotalPrice((float) (basePrice + response2.getVolume() * 0.05 * kmPrice * reservation.getKmToWish()));
         }
         return ResponseEntity.ok(reservationRepository.save(reservation));
     }
@@ -90,16 +99,16 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> r = reservationRepository.findAllReservationBetweenDatesWithVehicleId(reservation.getStartDate(), reservation.getEndDate(), reservation.getVehicleId());
         List<Reservation> j = reservationRepository.findAllReservationBetweenDatesWithUserId(reservation.getStartDate(), reservation.getEndDate(), reservation.getUserId());
 
-        ResponseEntity<User> response = findUserById(reservation.getUserId());
-        ResponseEntity<Vehicle> response2 = findVehicleById(reservation.getVehicleId());
+        User response = findUserById(reservation.getUserId());
+        Vehicle response2 = findVehicleById(reservation.getVehicleId());
 
         LocalDate dateAujourdhui = LocalDate.now();
-        LocalDate userBirthDate = response.getBody().getBirthDate().toLocalDate();
-        LocalDate dtaOfObtainingPermit = response.getBody().getDateOfObtaining().toLocalDate();
-        String vehiculeType = response2.getBody().getVehicleType();
-        float taxHorse = response2.getBody().getTaxHorse();
-        float basePrice = response2.getBody().getReservationPrice();
-        float kmPrice = response2.getBody().getKmPrice();
+        LocalDate userBirthDate = response.getBirthDate().toLocalDate();
+        LocalDate dtaOfObtainingPermit = response.getDateOfObtaining().toLocalDate();
+        String vehiculeType = response2.getVehicleType();
+        float taxHorse = response2.getTaxHorse();
+        float basePrice = response2.getReservationPrice();
+        float kmPrice = response2.getKmPrice();
 
         long userAge = calculateAge(userBirthDate, dateAujourdhui);
         long permitAvailable = calculateAge(dtaOfObtainingPermit, dateAujourdhui);
@@ -123,10 +132,10 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setTotalPrice(basePrice + kmPrice * reservation.getKmToWish());
         }
         if (Objects.equals(vehiculeType, "2_roue")){
-            reservation.setTotalPrice((float) (basePrice + response2.getBody().getCylinder() * 0.001 *  kmPrice * reservation.getKmToWish()));
+            reservation.setTotalPrice((float) (basePrice + response2.getCylinder() * 0.001 *  kmPrice * reservation.getKmToWish()));
         }
         if (Objects.equals(vehiculeType, "utilitaire")){
-            reservation.setTotalPrice((float) (basePrice + response2.getBody().getVolume() * 0.05 * kmPrice * reservation.getKmToWish()));
+            reservation.setTotalPrice((float) (basePrice + response2.getVolume() * 0.05 * kmPrice * reservation.getKmToWish()));
         }
 
         reservation.setId(id);
@@ -144,25 +153,34 @@ public class ReservationServiceImpl implements ReservationService {
         return Period.between(birthDate, currentDate).getYears();
     }
 
-    public ResponseEntity<User> findUserById(int userId) {
+    public User findUserById(int userId) {
         String url = "http://USER/user/{userId}";
-        return restTemplate.getForEntity(url, User.class, userId);
+        return restTemplate.getForObject(url, User.class, userId);
     }
 
-    public ResponseEntity<Vehicle> findVehicleById(int vehicleId) {
+    public Vehicle findVehicleById(int vehicleId) {
         String url2 = "http://VEHICLE/api/vehicle/{reservation.getVehicleId()}";
-        return restTemplate.getForEntity(url2, Vehicle.class, vehicleId);
+        return restTemplate.getForObject(url2, Vehicle.class, vehicleId);
+    }
+
+    public List<Maintenance> findAllMaintenanceByVehicleId(int vehicleId) {
+        String url3 = "http://VEHICLE/api/maintenance/vehicle/{reservation.getVehicleId()}";
+        return Collections.singletonList(restTemplate.getForObject(url3, Maintenance.class, vehicleId));
     }
 
     public Reservation ReservationMaintenanceUpdate( int id , Reservation reservation) {
         Optional<Reservation> reservationOptional = Optional.ofNullable(reservationRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-        RestTemplate restTemplate = new RestTemplate();
 
         String url = "http://VEHICLE/api/maintenance/vehicle/" + reservation.getVehicleId();
         ResponseEntity<Maintenance> maintenanceResponse = restTemplate.getForEntity(url, Maintenance.class);
 
         String url2 = "http://VEHICLE/api/vehicle/" + reservation.getVehicleId();
         Vehicle vehiculeResponse = restTemplate.getForObject(url2, Vehicle.class);
+
+        float taxHorse = vehiculeResponse.getTaxHorse();
+        float basePrice = vehiculeResponse.getReservationPrice();
+        float kmPrice = vehiculeResponse.getKmPrice();
+        String vehiculeType = vehiculeResponse.getVehicleType();
 
         String url3 = "http://VEHICLE/api/vehicle/" + reservation.getVehicleId();
 
@@ -181,14 +199,14 @@ public class ReservationServiceImpl implements ReservationService {
             if (vehiculeResponse.getVehicleType().equals("moto")) {
                 if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 1000 || calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("chaîne motos +1000 km");
-                    maintenance.setRealize(false);
+                    maintenance.setRealized(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
 
                 }
                 if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("liquide de frein");
-                    maintenance.setRealize(false);
+                    maintenance.setRealized(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
@@ -196,13 +214,13 @@ public class ReservationServiceImpl implements ReservationService {
             if (vehiculeResponse.getVehicleType().equals("voiture") || vehiculeResponse.getVehicleType().equals("utilitaire")) {
                 if ((vehiculeResponse.getTraveledKm() - maintenanceResponse.getBody().getKmVehicle()) >= 100000) {
                     maintenance.setNotification("courroie de distribution +100 000 Km");
-                    maintenance.setRealize(false);
+                    maintenance.setRealized(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
                 if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 1) {
                     maintenance.setNotification("les pneus doit etre changer + 1 ans");
-                    maintenance.setRealize(false);
+                    maintenance.setRealized(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
@@ -210,15 +228,22 @@ public class ReservationServiceImpl implements ReservationService {
             if (vehiculeResponse.getVehicleType().equals("utilitaire")) {
                 if (calculateAge(LocalDate.from(maintenanceResponse.getBody().getUpdatedAt()), LocalDate.from(reservationOptional.get().getEndDate())) >= 2) {
                     maintenance.setNotification("les suspensions doivent etre changer + 2 ans");
-                    maintenance.setRealize(false);
+                    maintenance.setRealized(false);
                     HttpEntity<Maintenance> request2 = new HttpEntity<Maintenance>(maintenance);
                     restTemplate.postForEntity(url4, request2, Maintenance.class);
                 }
+            }
+            if (Objects.equals(vehiculeType, "voiture")){
+                reservation.setTotalPrice(basePrice + kmPrice * reservation.getKmToWish());
+            }
+            if (Objects.equals(vehiculeType, "2_roue")){
+                reservation.setTotalPrice((float) (basePrice + vehiculeResponse.getCylinder() * 0.001 *  kmPrice * reservation.getKmToWish()));
+            }
+            if (Objects.equals(vehiculeType, "utilitaire")){
+                reservation.setTotalPrice((float) (basePrice + vehiculeResponse.getVolume() * 0.05 * kmPrice * reservation.getKmToWish()));
             }
             return reservationRepository.save(reservation);
         }
         return null;
     }
-
-
 }

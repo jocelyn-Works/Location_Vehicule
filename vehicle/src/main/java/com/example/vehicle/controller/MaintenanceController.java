@@ -56,6 +56,11 @@ public class MaintenanceController {
         return maintenanceRepository.findByVehicleId(vehicle_id);
     }
 
+    @GetMapping(value = ("/maintenances/vehicle/{vehicle_id}"))
+    public List<Maintenance> getAllMaintenanceByVehicleId(@PathVariable int vehicle_id) {
+        return maintenanceRepository.findAllByVehicleId(vehicle_id);
+    }
+
 
     @PutMapping(value = ("/maintenance/{id}"))
     public Maintenance updateMaintenance(@PathVariable int id, @Valid @RequestBody Maintenance maintenance) {
@@ -68,9 +73,11 @@ public class MaintenanceController {
             maintenance.setUpdatedAt(maintenance.getUpdatedAt());
             maintenance.setStartMaintenance(maintenance.getStartMaintenance());
             maintenance.setEndMaintenance(maintenance.getEndMaintenance());
+          
             return  maintenanceRepository.save(maintenance);
         }
         return maintenance;
+
     }
 
     @DeleteMapping(value = ("/maintenance/{id}"))

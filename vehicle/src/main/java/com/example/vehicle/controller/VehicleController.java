@@ -51,7 +51,6 @@ public class VehicleController {
      */
     @PostMapping(value = "/vehicle")
     public ResponseEntity<Vehicle> addVehicle(@RequestBody Vehicle vehicle) {
-
         return ResponseEntity.ok(vehicleRepository.save(vehicle));
     }
 

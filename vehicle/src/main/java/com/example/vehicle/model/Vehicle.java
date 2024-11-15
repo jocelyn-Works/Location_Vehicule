@@ -6,20 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "vehicle")
-public class Vehicle implements Serializable {
+public class Vehicle {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    //@GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @Column(name="vehicle_registration", nullable = false, unique = true)
@@ -46,16 +41,27 @@ public class Vehicle implements Serializable {
     @Column(name="tax_horse", nullable = false)
     private Float taxHorse;
 
-
     @Column(name="traveled_km", nullable = false)
     private int traveledKm;
 
     @Column(name="cylinder", nullable = true)
-    private int cylinder;
+    private int cylinder = 0;
 
     @Column(name="volume", nullable = true)
-    private int volume;
+    private int volume = 0;
 
-
-
+    public Vehicle(int id, String vehicleRegistration, String vehicleType, String brand, String model, String color, Float reservationPrice, Float kmPrice, Float taxHorse, int traveledKm, int cylinder, int volume) {
+        this.id = id;
+        this.vehicleRegistration = vehicleRegistration;
+        this.vehicleType = vehicleType;
+        this.brand = brand;
+        this.model = model;
+        this.color = color;
+        this.reservationPrice = reservationPrice;
+        this.kmPrice = kmPrice;
+        this.taxHorse = taxHorse;
+        this.traveledKm = traveledKm;
+        this.cylinder = cylinder;
+        this.volume = volume;
+    }
 }
