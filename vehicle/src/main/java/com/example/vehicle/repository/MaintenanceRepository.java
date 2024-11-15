@@ -14,4 +14,6 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Intege
     Maintenance findByVehicleId(int vehicleId);
 
     List<Maintenance> findByRealizedFalse();
+
+    List<Maintenance> findAllByVehicleId(long vehicle_id);
 }

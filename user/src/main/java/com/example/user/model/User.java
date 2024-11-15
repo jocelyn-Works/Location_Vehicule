@@ -11,13 +11,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.sql.Date;
-import java.io.Serializable;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class User implements Serializable {
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @NotBlank
@@ -38,12 +37,20 @@ public class User implements Serializable {
     @NotNull
     private Date dateOfObtaining;
 
-
-    public User(int id, String firstName, String lastName, String code, int years, int months, int days) {
+    public User(int id, String firstName, String lastName, Date birthDate, String permitCode, Date dateOfObtaining) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthDate = new Date(years, months, days);
-        this.permitCode = code;
+        this.birthDate = birthDate;
+        this.permitCode = permitCode;
+        this.dateOfObtaining = dateOfObtaining;
+    }
+
+    public User(String firstName, String lastName, Date birthDate, String permitCode, Date dateOfObtaining) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.permitCode = permitCode;
+        this.dateOfObtaining = dateOfObtaining;
     }
 }

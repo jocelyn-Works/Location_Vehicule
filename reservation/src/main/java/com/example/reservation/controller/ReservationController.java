@@ -42,10 +42,7 @@ public class ReservationController {
     @PutMapping(value = ("/reservation/maintenance/{id}"))
     public Reservation updateReservationMaintenance(@PathVariable int id, @RequestBody Reservation reservation) {
         return reservationService.ReservationMaintenanceUpdate(id, reservation);
-
     }
-
-
 
     @GetMapping(value = ("/reservation"))
     public ResponseEntity<List<Reservation>> getAllReservations() {
