@@ -41,10 +41,10 @@ public class Maintenance {
     private Boolean realized = false;
 
     @CreationTimestamp
-    private LocalDateTime createdDate;
+    private LocalDate createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
     public Maintenance(int id, String notification) {
         this.id = id;
