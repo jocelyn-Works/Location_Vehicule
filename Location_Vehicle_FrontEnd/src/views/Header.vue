@@ -7,7 +7,7 @@
     <div class="logo"><a href="/"><img src="../components/icons/logo.png" alt="Logo"></a></div>
     <div><a href="/">Acceuil</a></div>
     <div><a href="/catalog">Catalogue</a></div>
-    <div><a href="/contact">Contact</a></div>
+    <div><RouterLink :to="{ name: 'connexion' }">Connexion</RouterLink></div>
   </section>
 </template>
 
@@ -23,11 +23,13 @@
   color: white;
   font-weight: bold;
 }
+
 .logo {
   margin-top: 2%;
   margin-left: -15%;
 }
-.logo img{
+
+.logo img {
   width: 150px;
   height: 150px;
   border-radius: 50%;
