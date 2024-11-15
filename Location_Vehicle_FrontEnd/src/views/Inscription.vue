@@ -10,38 +10,38 @@
           <input type="text" v-model="form.firstName" id="firstName" placeholder="Entrez votre prénom" required />
         </div>
 
-        <!-- Nom -->
+
         <div class="input-group">
           <label for="lastName">Nom</label>
           <input type="text" v-model="form.lastName" id="lastName" placeholder="Entrez votre nom" required />
         </div>
 
-        <!-- Email -->
+
         <div class="input-group">
           <label for="email">Email</label>
           <input type="email" v-model="form.email" id="email" placeholder="Entrez votre email" required />
           <span v-if="emailError" class="error">L'email est déjà utilisé.</span>
         </div>
 
-        <!-- Date de naissance -->
+
         <div class="input-group">
           <label for="birthDate">Date de naissance</label>
           <input type="date" v-model="form.birthDate" id="birthDate" required />
         </div>
 
-        <!-- Code de permis -->
+
         <div class="input-group">
           <label for="permitCode">Code de permis</label>
           <input type="text" v-model="form.permitCode" id="permitCode" placeholder="Entrez votre code de permis" required />
         </div>
 
-        <!-- Date d'obtention -->
+
         <div class="input-group">
           <label for="dateOfObtaining">Date d'obtention du permis</label>
           <input type="date" v-model="form.dateOfObtaining" id="dateOfObtaining" required />
         </div>
 
-        <!-- Mot de passe -->
+
         <div class="input-group">
           <label for="password">Mot de passe</label>
           <input type="password" v-model="form.password" id="password" placeholder="Créez un mot de passe" required />
@@ -62,6 +62,7 @@
   </div>
 </template>
 
+
 <script>
 import axios from "axios";
 
@@ -76,32 +77,28 @@ export default {
         permitCode: "",
         dateOfObtaining: "",
         password: "",
-        role: ["user"], // Rôle par défaut
+        role: ["user"],
       },
-      emailError: false, // Pour afficher l'erreur email
-      successMessage: false, // Message de succès
-      errorMessage: false, // Message d'erreur générique
+      emailError: false,
+      successMessage: false,
+      errorMessage: false,
     };
   },
   methods: {
     async handleSubmit() {
       try {
-        // Réinitialiser les messages
         this.successMessage = false;
         this.errorMessage = false;
         this.emailError = false;
 
-        // Préparer les données à envoyer
         const payload = { ...this.form };
 
-        console.log(payload);  // Afficher l'objet pour déboguer
+        console.log(payload);
 
-        // Envoyer la requête POST
         const response = await axios.post("http://localhost:9191/api/signup", payload);
 
         if (response.status === 200) {
           this.successMessage = true;
-          // Réinitialiser le formulaire après un succès
           this.form = {
             firstName: "",
             lastName: "",
@@ -110,21 +107,20 @@ export default {
             permitCode: "",
             dateOfObtaining: "",
             password: "",
-            role: ["user"], // Garder le rôle par défaut
+            role: ["user"],
           };
         }
       } catch (error) {
-        console.log(error);  // Affiche l'erreur complète dans la console
+        console.log(error);
 
         if (error.response && error.response.data) {
-          // Vérifier l'erreur spécifique de l'email déjà utilisé
+
           if (error.response.data.message === "Error: Email is already in use!") {
             this.emailError = true;
           } else {
             this.errorMessage = true;
           }
         } else {
-          // En cas d'autres erreurs
           this.errorMessage = true;
         }
       }

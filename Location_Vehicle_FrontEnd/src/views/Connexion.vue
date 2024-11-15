@@ -49,31 +49,30 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-        // Réinitialiser les messages d'erreur
         this.successMessage = false;
         this.errorMessage = false;
 
-        // Préparer les données à envoyer au backend
+
         const payload = {
           email: this.form.email,
           password: this.form.password,
         };
 
-        // Envoi de la requête POST vers le backend pour la connexion
+
         const response = await axios.post('http://localhost:9191/api/login', payload, {
           withCredentials: true,  // Permet l'envoi et la réception de cookies
         });
 
-        // Vérifier la réponse
+
         if (response.status === 200) {
           this.successMessage = true;
-          // Rediriger l'utilisateur après une connexion réussie
-          this.$router.push('/catalog');  // Redirection vers le tableau de bord ou page protégée
+
+          this.$router.push('/catalog');
         }
       } catch (error) {
         // Si erreur (mauvais identifiants)
         this.errorMessage = true;
-        console.log(error);  // Affiche l'erreur dans la console pour le débogage
+        console.log(error);
       }
     },
   },
